@@ -3,37 +3,41 @@
 <head>
 <title>PokeReads Dex</title>
 <style>
-body {
-font-family: Arial, sans-serif;
-background: #f2f2f2;
-text-align: center;
-padding: 40px;
+body{
+font-family: Arial;
+background:#f2f2f2;
+text-align:center;
+padding:40px;
 }
 
-.container {
-background: white;
-padding: 25px;
-border-radius: 10px;
-max-width: 500px;
-margin: auto;
-box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+.container{
+background:white;
+padding:25px;
+border-radius:10px;
+max-width:500px;
+margin:auto;
+box-shadow:0px 4px 10px rgba(0,0,0,0.1);
 }
 
-button {
-background: #ff3b3b;
-color: white;
-border: none;
-padding: 12px 20px;
-font-size: 16px;
-border-radius: 6px;
-cursor: pointer;
-margin-top: 10px;
+button{
+background:#ff3b3b;
+color:white;
+border:none;
+padding:12px 20px;
+font-size:16px;
+border-radius:6px;
+cursor:pointer;
+margin:6px;
 }
 
-input {
-width: 90%;
-padding: 8px;
-margin: 6px 0;
+input{
+width:90%;
+padding:8px;
+margin:6px 0;
+}
+
+.hidden{
+display:none;
 }
 </style>
 </head>
@@ -44,58 +48,114 @@ margin: 6px 0;
 
 <h1>PokéReads Dex</h1>
 
-<h3>Trainer Name</h3>
-<input id="trainer" placeholder="Enter trainer name">
+<div id="home">
 
-<h3>Encounter Pokémon</h3>
+<button onclick="showEncounter()">Random Encounter</button>
+<button onclick="showDex()">Open Pokédex</button>
+
+</div>
+
+<div id="encounter" class="hidden">
+
+<h2>Encounter Pokémon</h2>
 
 <button onclick="encounter()">Encounter</button>
 
-<h2 id="pokemon"></h2>
+<h3 id="pokemon"></h3>
 <p id="prompt"></p>
 
-<h3>Book Title</h3>
-<input id="book">
-
-<h3>Author</h3>
-<input id="author">
+<input id="book" placeholder="Book title">
+<input id="author" placeholder="Author">
 
 <button onclick="catchPokemon()">Catch Pokémon</button>
 
 <p id="result"></p>
 
+<button onclick="goHome()">Back</button>
+
+</div>
+
+<div id="dex" class="hidden">
+
+<h2>Manual Pokédex Entry</h2>
+
+<select id="dexPokemon">
+
+<option>Bulbasaur</option>
+<option>Charmander</option>
+<option>Squirtle</option>
+<option>Pikachu</option>
+<option>Eevee</option>
+
+</select>
+
+<input id="dexBook" placeholder="Book title">
+<input id="dexAuthor" placeholder="Author">
+
+<button onclick="manualCatch()">Add to Pokédex</button>
+
+<p id="dexResult"></p>
+
+<button onclick="goHome()">Back</button>
+
+</div>
+
 </div>
 
 <script>
 
-const pokemonList = [
-{name:"Bulbasaur", prompt:"Read a book with plants or nature on the cover"},
-{name:"Charmander", prompt:"Read a fast-paced or fiery story"},
-{name:"Squirtle", prompt:"Read a book set near water"},
-{name:"Pikachu", prompt:"Read an energetic or exciting book"},
-{name:"Eevee", prompt:"Read a book that fits multiple genres"}
+const pokemonList=[
+{name:"Bulbasaur",prompt:"Read a book with plants or nature"},
+{name:"Charmander",prompt:"Read a fast paced story"},
+{name:"Squirtle",prompt:"Read a book set near water"},
+{name:"Pikachu",prompt:"Read an energetic book"},
+{name:"Eevee",prompt:"Read a multi genre book"}
 ]
 
 let currentPokemon
 
+function showEncounter(){
+document.getElementById("home").classList.add("hidden")
+document.getElementById("encounter").classList.remove("hidden")
+}
+
+function showDex(){
+document.getElementById("home").classList.add("hidden")
+document.getElementById("dex").classList.remove("hidden")
+}
+
+function goHome(){
+document.getElementById("home").classList.remove("hidden")
+document.getElementById("encounter").classList.add("hidden")
+document.getElementById("dex").classList.add("hidden")
+}
+
 function encounter(){
-let random = pokemonList[Math.floor(Math.random()*pokemonList.length)]
-currentPokemon = random
-document.getElementById("pokemon").innerText = random.name + " appeared!"
-document.getElementById("prompt").innerText = random.prompt
+let random=pokemonList[Math.floor(Math.random()*pokemonList.length)]
+currentPokemon=random
+document.getElementById("pokemon").innerText=random.name+" appeared!"
+document.getElementById("prompt").innerText=random.prompt
 }
 
 function catchPokemon(){
-let book = document.getElementById("book").value
-let author = document.getElementById("author").value
 
-if(!currentPokemon){
-alert("Encounter a Pokémon first!")
-return
+let book=document.getElementById("book").value
+let author=document.getElementById("author").value
+
+document.getElementById("result").innerText=
+"You caught "+currentPokemon.name+" with '"+book+"' by "+author
+
 }
 
-document.getElementById("result").innerText =
-"You caught " + currentPokemon.name + " with the book '" + book + "' by " + author + "!"
+function manualCatch(){
+
+let pokemon=document.getElementById("dexPokemon").value
+let book=document.getElementById("dexBook").value
+let author=document.getElementById("dexAuthor").value
+
+document.getElementById("dexResult").innerText=
+pokemon+" added to your Pokédex with '"+book+"' by "+author
+
 }
 
 </script>
