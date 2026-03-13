@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>PokeReads Dex</title>
+<style>
+body {
+font-family: Arial, sans-serif;
+background: #f2f2f2;
+text-align: center;
+padding: 40px;
+}
+
+.container {
+background: white;
+padding: 25px;
+border-radius: 10px;
+max-width: 500px;
+margin: auto;
+box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+}
+
+button {
+background: #ff3b3b;
+color: white;
+border: none;
+padding: 12px 20px;
+font-size: 16px;
+border-radius: 6px;
+cursor: pointer;
+margin-top: 10px;
+}
+
+input {
+width: 90%;
+padding: 8px;
+margin: 6px 0;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>PokéReads Dex</h1>
+
+<h3>Trainer Name</h3>
+<input id="trainer" placeholder="Enter trainer name">
+
+<h3>Encounter Pokémon</h3>
+
+<button onclick="encounter()">Encounter</button>
+
+<h2 id="pokemon"></h2>
+<p id="prompt"></p>
+
+<h3>Book Title</h3>
+<input id="book">
+
+<h3>Author</h3>
+<input id="author">
+
+<button onclick="catchPokemon()">Catch Pokémon</button>
+
+<p id="result"></p>
+
+</div>
+
+<script>
+
+const pokemonList = [
+{name:"Bulbasaur", prompt:"Read a book with plants or nature on the cover"},
+{name:"Charmander", prompt:"Read a fast-paced or fiery story"},
+{name:"Squirtle", prompt:"Read a book set near water"},
+{name:"Pikachu", prompt:"Read an energetic or exciting book"},
+{name:"Eevee", prompt:"Read a book that fits multiple genres"}
+]
+
+let currentPokemon
+
+function encounter(){
+let random = pokemonList[Math.floor(Math.random()*pokemonList.length)]
+currentPokemon = random
+document.getElementById("pokemon").innerText = random.name + " appeared!"
+document.getElementById("prompt").innerText = random.prompt
+}
+
+function catchPokemon(){
+let book = document.getElementById("book").value
+let author = document.getElementById("author").value
+
+if(!currentPokemon){
+alert("Encounter a Pokémon first!")
+return
+}
+
+document.getElementById("result").innerText =
+"You caught " + currentPokemon.name + " with the book '" + book + "' by " + author + "!"
+}
+
+</script>
+
+</body>
+</html>
