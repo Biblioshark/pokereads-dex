@@ -271,6 +271,33 @@ function manualCatch() {
   document.getElementById("dexResult").innerText =
     pokemon + " added to your Pokédex with '" + book + "' by " + author;
 }
+  async function loadCaughtPokemon() {
+  const list = document.getElementById("caughtList");
+  list.innerHTML = "Loading...";
+
+  const email = document.getElementById("trainerEmail").innerText;
+
+  const response = await fetch(
+    "https://xipsgbxamtcmamxwjzvc.supabase.co/rest/v1/pokedex_entries?user_email=eq." + encodeURIComponent(email),
+    {
+      headers: {
+        "apikey": "sb_publishable_swWXrY2jEyzfi_m1Ml3OZA__tGjal3k",
+        "Authorization": "Bearer sb_publishable_swWXrY2jEyzfi_m1Ml3OZA__tGjal3k"
+      }
+    }
+  );
+
+  const data = await response.json();
+
+  if (!data || data.length === 0) {
+    list.innerHTML = "No Pokémon caught yet.";
+    return;
+  }
+
+  list.innerHTML = data.map(entry =>
+    `<p><strong>${entry.pokemon}</strong> — ${entry.book} by ${entry.author}</p>`
+  ).join("");
+}
 </script>
 </body>
 </html>
