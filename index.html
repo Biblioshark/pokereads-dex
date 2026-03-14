@@ -64,28 +64,75 @@ const SUPABASE_URL="https://xipsgbxamtcmamxwjzvc.supabase.co";
 const SUPABASE_KEY="sb_publishable_swWXrY2jEyzfi_m1Ml3OZA__tGjal3k";
 const supabase=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
-async function signUp(){
-const msg=document.getElementById("authMessage");
-const email=document.getElementById("email").value.trim();
-const password=document.getElementById("password").value;
+async function signUp() {
+  const msg = document.getElementById("authMessage");
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
 
-if(!email||!password){
-msg.innerText="Enter email and password";
-return;
+  if (!email || !password) {
+    msg.innerText = "Enter email and password.";
+    return;
+  }
+
+  msg.innerText = "Trying sign up...";
+
+  try {
+    const response = await fetch("https://xipsgbxamtcmamxwjzvc.supabase.co/auth/v1/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": "sb_publishable_swWXrY2jEyzfi_m1Ml3OZA__tGjal3k"
+      },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      msg.innerText = "Sign up error: " + (data.error_description || data.error || "Unknown error");
+      return;
+    }
+
+    msg.innerText = "Account created. Check your email if confirmation is required.";
+  } catch (err) {
+    msg.innerText = "Crash: " + err.message;
+  }
 }
 
-msg.innerText="Trying sign up...";
+async function logIn() {
+  const msg = document.getElementById("authMessage");
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
 
-const {error}=await supabase.auth.signUp({email:email,password:password});
+  if (!email || !password) {
+    msg.innerText = "Enter email and password.";
+    return;
+  }
 
-if(error){
-msg.innerText=error.message;
-}else{
-msg.innerText="Account created. Check your email if confirmation required.";
+  msg.innerText = "Trying log in...";
+
+  try {
+    const response = await fetch("https://xipsgbxamtcmamxwjzvc.supabase.co/auth/v1/token?grant_type=password", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": "sb_publishable_swWXrY2jEyzfi_m1Ml3OZA__tGjal3k"
+      },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      msg.innerText = "Log in error: " + (data.error_description || data.error || "Unknown error");
+      return;
+    }
+
+    msg.innerText = "Logged in successfully.";
+  } catch (err) {
+    msg.innerText = "Crash: " + err.message;
+  }
 }
-}
-
-async function logIn(){
 const msg=document.getElementById("authMessage");
 const email=document.getElementById("email").value.trim();
 const password=document.getElementById("password").value;
