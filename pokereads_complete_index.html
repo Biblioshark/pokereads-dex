@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PokeReads Dex</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      text-align: center;
+      padding: 40px;
+      margin: 0;
+    }
+    .container {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      max-width: 560px;
+      margin: auto;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    button {
+      background: #ef5447;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin: 6px;
+    }
+    input, select {
+      width: 90%;
+      padding: 10px;
+      margin: 8px 0;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    .hidden { display: none; }
+    #authMessage, #result, #dexResult {
+      min-height: 24px;
+      margin-top: 10px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>PokéReads Dex</h1>
+
+    <div id="authBox">
+      <input id="email" type="email" placeholder="Email" />
+      <input id="password" type="password" placeholder="Password" />
+      <button onclick="signUp()">Sign Up</button>
+      <button onclick="logIn()">Log In</button>
+      <p id="authMessage"></p>
+    </div>
+
+    <div id="home">
+      <button onclick="showEncounter()">Random Encounter</button>
+      <button onclick="showDex()">Open Pokédex</button>
+    </div>
+
+    <div id="encounter" class="hidden">
+      <h2>Encounter Pokémon</h2>
+      <button onclick="encounter()">Encounter</button>
+      <h3 id="pokemon"></h3>
+      <p id="prompt"></p>
+
+      <input id="book" placeholder="Book title" />
+      <input id="author" placeholder="Author" />
+      <button onclick="catchPokemon()">Catch Pokémon</button>
+      <p id="result"></p>
+      <button onclick="goHome()">Back</button>
+    </div>
+
+    <div id="dex" class="hidden">
+      <h2>Manual Pokédex Entry</h2>
+      <select id="dexPokemon">
+        <option>Bulbasaur</option>
+        <option>Charmander</option>
+        <option>Squirtle</option>
+        <option>Pikachu</option>
+        <option>Eevee</option>
+      </select>
+
+      <input id="dexBook" placeholder="Book title" />
+      <input id="dexAuthor" placeholder="Author" />
+      <button onclick="manualCatch()">Add to Pokédex</button>
+      <p id="dexResult"></p>
+      <button onclick="goHome()">Back</button>
+    </div>
+  </div>
+
+<script>
+const SUPABASE_URL = "https://xipsgbxamtcmamxwjzvc.supabase.co";
+const SUPABASE_KEY = "sb_publishable_swWXrY2jEyzfi_m1Ml3OZA__tGjal3k";
+
+function setAuthMessage(text) {
+  document.getElementById("authMessage").innerText = text;
+}
+
+async function signUp() {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+
+  if (!email || !password) {
+    setAuthMessage("Enter email and password.");
+    return;
+  }
+
+  setAuthMessage("Trying sign up...");
+
+  try {
+    const response = await fetch(SUPABASE_URL + "/auth/v1/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": SUPABASE_KEY
+      },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      setAuthMessage("Sign up error: " + (data.msg || data.error_description || data.error || "Unknown error"));
+      return;
+    }
+
+    setAuthMessage("Account created. Check your email if confirmation is required.");
+  } catch (err) {
+    setAuthMessage("Crash: " + err.message);
+  }
+}
+
+async function logIn() {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+
+  if (!email || !password) {
+    setAuthMessage("Enter email and password.");
+    return;
+  }
+
+  setAuthMessage("Trying log in...");
+
+  try {
+    const response = await fetch(SUPABASE_URL + "/auth/v1/token?grant_type=password", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": SUPABASE_KEY
+      },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      setAuthMessage("Log in error: " + (data.msg || data.error_description || data.error || "Unknown error"));
+      return;
+    }
+
+    setAuthMessage("Logged in successfully.");
+  } catch (err) {
+    setAuthMessage("Crash: " + err.message);
+  }
+}
+
+const pokemonList = [
+  { name: "Bulbasaur", prompt: "Read a book with plants or nature" },
+  { name: "Charmander", prompt: "Read a fast paced story" },
+  { name: "Squirtle", prompt: "Read a book set near water" },
+  { name: "Pikachu", prompt: "Read an energetic book" },
+  { name: "Eevee", prompt: "Read a multi genre book" }
+];
+
+let currentPokemon;
+
+function showEncounter() {
+  document.getElementById("home").classList.add("hidden");
+  document.getElementById("encounter").classList.remove("hidden");
+}
+
+function showDex() {
+  document.getElementById("home").classList.add("hidden");
+  document.getElementById("dex").classList.remove("hidden");
+}
+
+function goHome() {
+  document.getElementById("home").classList.remove("hidden");
+  document.getElementById("encounter").classList.add("hidden");
+  document.getElementById("dex").classList.add("hidden");
+}
+
+function encounter() {
+  const random = pokemonList[Math.floor(Math.random() * pokemonList.length)];
+  currentPokemon = random;
+  document.getElementById("pokemon").innerText = random.name + " appeared!";
+  document.getElementById("prompt").innerText = random.prompt;
+}
+
+function catchPokemon() {
+  if (!currentPokemon) {
+    document.getElementById("result").innerText = "Encounter a Pokémon first!";
+    return;
+  }
+
+  const book = document.getElementById("book").value.trim();
+  const author = document.getElementById("author").value.trim();
+
+  if (!book || !author) {
+    document.getElementById("result").innerText = "Enter book title and author.";
+    return;
+  }
+
+  document.getElementById("result").innerText =
+    "You caught " + currentPokemon.name + " with '" + book + "' by " + author;
+}
+
+function manualCatch() {
+  const pokemon = document.getElementById("dexPokemon").value;
+  const book = document.getElementById("dexBook").value.trim();
+  const author = document.getElementById("dexAuthor").value.trim();
+
+  if (!book || !author) {
+    document.getElementById("dexResult").innerText = "Enter book title and author.";
+    return;
+  }
+
+  document.getElementById("dexResult").innerText =
+    pokemon + " added to your Pokédex with '" + book + "' by " + author;
+}
+</script>
+</body>
+</html>
