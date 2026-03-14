@@ -167,6 +167,10 @@ async function logIn() {
     }
 
     setAuthMessage("Logged in successfully.");
+
+document.getElementById("trainerEmail").innerText = email;
+document.getElementById("trainerBar").style.display = "block";
+document.getElementById("authBox").style.display = "none";
   } catch (err) {
     setAuthMessage("Crash: " + err.message);
   }
