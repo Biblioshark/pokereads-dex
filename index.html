@@ -56,7 +56,13 @@
 <body>
   <div class="container">
     <h1>PokéReads Dex</h1>
-
+<div id="authBox">
+  <input id="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
+  <button onclick="signUp()">Sign Up</button>
+  <button onclick="logIn()">Log In</button>
+  <p id="authMessage"></p>
+</div>
     <div id="home">
       <button onclick="showEncounter()">Random Encounter</button>
       <button onclick="showDex()">Open Pokédex</button>
